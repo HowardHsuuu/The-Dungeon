@@ -3,12 +3,13 @@ import random
 import pygame
 from helper import load_image
 from config import WORLD_WIDTH, WORLD_HEIGHT
+from models.item import Endpoint
 
 class Renderer:
     def __init__(self, screen, assets):
         self.screen = screen
 
-        # Check for three types of tile images
+        # Check for five types of tile images
         tile_paths = []
         for i in range(1, 6):
             path = f"assets/tiles{i}.png"
@@ -38,7 +39,7 @@ class Renderer:
         self.arrow_icon = load_image("assets/arrow-icon.png", (30, 30))
         # Ensure no_key_icon has the correct size and transparency
         self.no_key_icon = load_image("assets/no-key.png", (25, 35))
-        
+
     def render(self, all_sprites, wall_group, player, endpoint_group, camera_x,
                game_over, win, endpoint_message, font, title_font):
         if self.background_image:
@@ -47,8 +48,11 @@ class Renderer:
             self.screen.fill(self.bg_color)
         for wall in wall_group:
             self.screen.blit(wall.image, (wall.rect.x - camera_x, wall.rect.y))
+        for endpoint in endpoint_group:
+            self.screen.blit(endpoint.image, (endpoint.rect.x - camera_x, endpoint.rect.y))
         for sprite in all_sprites:
-            self.screen.blit(sprite.image, (sprite.rect.x - camera_x, sprite.rect.y))
+            if not isinstance(sprite, Endpoint):
+                self.screen.blit(sprite.image, (sprite.rect.x - camera_x, sprite.rect.y))
         if endpoint_message:
             msg = title_font.render(endpoint_message, True, (255, 0, 0))
             msg_rect = msg.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2))
@@ -91,3 +95,20 @@ class Renderer:
             timer_rect = timer_text.get_rect(center=(x_start + self.powerup_icon.get_width() // 2,
                                                       bottom_y + self.powerup_icon.get_height() // 2))
             self.screen.blit(timer_text, timer_rect)
+
+        center = pygame.math.Vector2(player.rect.centerx - camera_x, player.rect.centery)
+        player_size = player.image.get_width()
+        offset_distance = player_size / 2
+        D = player.direction.normalize()
+        start_point = center + D * offset_distance
+        arrow_line_length = 10
+        end_point = start_point + D * arrow_line_length
+        arrow_head_length = 5
+        arrow_head_width = 8
+        tip = end_point + D * arrow_head_length
+        perp = pygame.math.Vector2(-D.y, D.x)
+        base_left = end_point - D * arrow_head_length + perp * (arrow_head_width / 2)
+        base_right = end_point - D * arrow_head_length - perp * (arrow_head_width / 2)
+        arrow_color = (255, 0, 0)
+        pygame.draw.line(self.screen, arrow_color, start_point, end_point, 3)
+        pygame.draw.polygon(self.screen, arrow_color, [tip, base_left, base_right])
