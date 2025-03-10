@@ -29,7 +29,7 @@ class Fist(pygame.sprite.Sprite):
         self.timer = 0
 
     def update(self):
-        # TODO: 讓勇者的拳擊變強！
+        # TODO: 讓勇者學會拳擊
         '''
         拳擊物件的邏輯：當空白鍵被按時，一個 Fist 物件會被加入，並且在每個 frame 呼叫一次 update()
         發射物件（拳頭）的管理方式是：self.lifetime 作為拳頭存在的時間，用 self.timer 來計時
