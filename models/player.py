@@ -24,20 +24,16 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.lives = PLAYER_LIVES
         self.invuln_timer = 0
-        # Initial direction is to the right
         self.direction = pygame.math.Vector2(1, 0)
-        # Record last horizontal direction (1: right, -1: left)
         self.last_horizontal = 1
         self.powerup_timer = 0
         self.attack_range_boost = 0
         self.knockback_timer = 0
         self.knockback_vel = pygame.math.Vector2(0, 0)
         self.has_key = False
-        # Bow-related attributes
         self.has_bow = False
         self.is_attacking = False
         self.attack_frames = []
-        # Load 9 attack frames; at frame 8 (index>=7) prepare to fire arrow
         for i in range(1, 10):
             frame_path = f"assets/player-attack/{i}.png"
             if i == 8:
@@ -48,7 +44,6 @@ class Player(pygame.sprite.Sprite):
         self.attack_anim_index = 0
         self.attack_anim_speed = 0.2
         self.arrow_spawned = False
-        # After picking up a powerup, if player has a bow then enable rapid_fire; otherwise boost attack
         self.rapid_fire = False
 
         self.walk_frames = []
@@ -60,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 0.2
 
     def update(self, walls):
-        if self.knockback_timer > 0:
+        if self.knockback_timer > 0: # 玩家角色被擊退
             if self.knockback_image:
                 self.image = self.knockback_image.copy()
             else:
@@ -74,7 +69,7 @@ class Player(pygame.sprite.Sprite):
             if any(self.rect.colliderect(w.rect) for w in walls):
                 self.rect.y = old_y
             self.knockback_timer -= 1
-        elif self.is_attacking:
+        elif self.is_attacking: # 角色攻擊中（弓箭）
             self.attack_anim_index += self.attack_anim_speed
             if self.attack_anim_index >= len(self.attack_frames):
                 self.is_attacking = False
@@ -83,22 +78,23 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.normal_image.copy()
             else:
                 new_image = self.attack_frames[int(self.attack_anim_index)]
-                # Flip the attack frame if needed based on last horizontal direction
                 if self.last_horizontal < 0:
                     new_image = pygame.transform.flip(new_image, True, False)
                     new_image.set_colorkey((40,40,40))
                 self.image = new_image
-        else:
+        else: # 角色沒有在攻擊也沒有被擊退，可以移動
             keys = pygame.key.get_pressed()
             dx = dy = 0
-            if keys[pygame.K_LEFT]:
-                dx = -PLAYER_SPEED
-            if keys[pygame.K_RIGHT]:
-                dx = PLAYER_SPEED
-            if keys[pygame.K_UP]:
-                dy = -PLAYER_SPEED
-            if keys[pygame.K_DOWN]:
-                dy = PLAYER_SPEED
+            # TODO: 讓勇者動起來！
+            '''
+            keys 為一個 list，裡面包含了所有按鍵的狀態，按鍵為 True，沒按則為 False
+            例如 keys[pygame.K_LEFT] 會回傳 True 或 False，表示左鍵有沒有被按下
+            dx, dy 為勇者的移動方向，分別為 x 軸和 y 軸的移動速度
+            PLAYER_SPEED 為 config.py 中設定勇者的移動速度
+            '''
+            # ---------------- your code starts here ----------------
+            # Hint: 判斷 dx, dy 的值應該指定成什麼
+            # ---------------- your code ends here ----------------
 
             if dx != 0 or dy != 0:
                 if dx != 0:
@@ -146,7 +142,6 @@ class Player(pygame.sprite.Sprite):
             self.powerup_timer -= 1
             if self.powerup_timer == 0:
                 self.attack_range_boost = 0
-                # When the powerup effect ends, cancel rapid_fire
                 self.rapid_fire = False
 
     def start_knockback(self, knockback_velocity, duration):

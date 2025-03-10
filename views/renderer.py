@@ -71,30 +71,18 @@ class Renderer:
             msg = font.render("Press R to restart", True, (0, 255, 0))
             msg_rect = msg.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2 - 10))
             self.screen.blit(msg, msg_rect)
-        # Top row: display hearts (lives)
-        if self.heart_image:
-            heart_margin_x = 10
-            heart_margin_y = 10
-            heart_spacing = 25
-            for i in range(player.lives):
-                x = self.screen.get_width() - (heart_spacing * (i + 1) + 10)
-                y = heart_margin_y
-                self.screen.blit(self.heart_image, (x, y))
-        # Bottom row: display key, arrow, and powerup icons.
-        bottom_y = 10 + (self.heart_image.get_height() if self.heart_image else 25) + 5
-        icon_spacing = 40
-        x_start = self.screen.get_width() - (icon_spacing * 3 + 10)
-        key_to_show = self.key_icon if player.has_key else self.no_key_icon
-        self.screen.blit(key_to_show, (x_start + 2 * icon_spacing, bottom_y))
-        if player.has_bow:
-            self.screen.blit(self.arrow_icon, (x_start + icon_spacing, bottom_y))
-        if player.powerup_timer > 0:
-            self.screen.blit(self.powerup_icon, (x_start, bottom_y))
-            powerup_seconds = int(player.powerup_timer / 60)
-            timer_text = font.render(str(powerup_seconds), True, (255, 255, 255))
-            timer_rect = timer_text.get_rect(center=(x_start + self.powerup_icon.get_width() // 2,
-                                                      bottom_y + self.powerup_icon.get_height() // 2))
-            self.screen.blit(timer_text, timer_rect)
+        # TODO: 顯示勇者狀態
+        '''
+        模仿 demo 中看到的顯示方式，或是你喜歡的表現方式
+        self.heart_image 為一個愛心的圖案，你可以用 self.screen.blit(self.heart_image, (x, y)) 來將它顯示在畫面上 (x, y) 處
+        player.lives 可以取得勇者的生命值
+        player.has_key 可以取得勇者是否有鑰匙 --> 沒有鑰匙時顯示 self.no_key_icon, 有鑰匙時顯示 self.key_icon
+        player.has_bow 可以取得勇者是否有弓箭 --> 沒有弓箭時不顯示，有弓箭時顯示 self.arrow_icon
+        player.powerup_timer 可以取得勇者的道具效果剩餘時間 --> 有道具效果時顯示 self.powerup_icon，並在顯示效果剩餘時間
+        '''
+        # ---------------- your code starts here ----------------
+        # Hint: 在畫生命值時，或許可以考慮使用迴圈，並且請記得
+        # ---------------- your code ends here ------------------
 
         center = pygame.math.Vector2(player.rect.centerx - camera_x, player.rect.centery)
         player_size = player.image.get_width()

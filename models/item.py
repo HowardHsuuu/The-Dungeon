@@ -61,3 +61,15 @@ class Bow(Item):
         self.image = load_image("assets/bow.png", (30,30))
     def apply(self, player):
         player.has_bow = True
+
+# TODO: 新增一個道具
+'''
+你可以參考 AttackRangePowerUp 和 Bow 來新增一個道具
+道具的功能是什麼？你可以在 apply() 方法中實作
+'''
+class YourItem(Item):
+    def __init__(self, pos):
+        super().__init__(pos, size=30)
+        self.image = load_image("圖片路徑", (30,30))
+    def apply(self, player):
+        pass

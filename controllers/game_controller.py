@@ -6,7 +6,7 @@ from config import (
     NO_KEY_IMAGE_PATH, KEY_IMAGE_PATH, POWERUP_ICON_IMAGE_PATH,
     COLOR_BG, WORLD_WIDTH, WORLD_HEIGHT, KNOCKBACK_DURATION,
     KNOCKBACK_SPEED, INVULN_TIME, NUM_MONSTERS_INIT, KEY_DROP_PROBABILITY,
-    MAZE_CELL_SIZE, MAZE_COLS, MAZE_ROWS, PLAYER_SIZE
+    MAZE_CELL_SIZE, MAZE_COLS, MAZE_ROWS, PLAYER_SIZE, MONSTER_SPEED,
 )
 from models.player import Player
 from models.monster import Monster
@@ -15,6 +15,21 @@ from models.weapon import Fist, Arrow
 from models.maze import generate_maze, generate_maze_walls
 from views.renderer import Renderer
 from helper import load_image
+
+# TODO: 讓迷宮活起來！
+'''
+迷宮地圖是由「一格一格」的方塊組成，每個方塊的大小為 MAZE_CELL_SIZE
+迷宮地圖的大小（方塊數量）為 MAZE_COLS x MAZE_ROWS
+終點設定在 (MAZE_COLS-1, MAZE_ROWS//2) 的那塊方塊
+勇者的初始位置在 (0,0) 的那塊方塊
+請實作以下的 function, 回傳一個 position tuple (x, y)，代表一個物品隨機生成的位置（道具、怪物等）
+小提醒：有些位置不應該作為隨機生成的位置
+'''
+# ----------------- your code starts here -----------------
+def spwan_random_pos():
+    # Hint: 第 (i, j) 個方塊的左上角座標在地圖上為 (i*MAZE_CELL_SIZE, j*MAZE_CELL_SIZE)，可以思考一下回傳的 position 應該怎麼計算
+    return None
+# ----------------- your code ends here -----------------
 
 class GameController:
     def __init__(self, screen):
@@ -40,27 +55,25 @@ class GameController:
         self.all_sprites.add(self.player)
 
         for _ in range(NUM_MONSTERS_INIT):
-            while True:
-                col = random.randint(0, MAZE_COLS-1)
-                row = random.randint(0, MAZE_ROWS-1)
-                if (col, row) not in [(0,0), (MAZE_COLS-1, MAZE_ROWS//2)]:
-                    break
-            pos = (col*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2, row*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2)
-            monster = Monster(pos)
-            self.all_sprites.add(monster)
-            self.monster_group.add(monster)
+            pos = spwan_random_pos()
+            if pos == None:
+                continue
+            else:
+                monster = Monster(pos)
+                self.all_sprites.add(monster)
+                self.monster_group.add(monster)
 
-        # Spawn Bow powerup ensuring it doesn't overlap walls
         bow_spawned = False
         while not bow_spawned:
-            col = random.randint(0, MAZE_COLS-1)
-            row = random.randint(0, MAZE_ROWS-1)
-            pos = (col*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2, row*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2)
-            if not any(w.rect.collidepoint(pos) for w in self.wall_group):
-                bow = Bow(pos)
-                self.all_sprites.add(bow)
-                self.powerup_group.add(bow)
-                bow_spawned = True
+            pos = spwan_random_pos()
+            if pos == None:
+                break
+            else:
+                if not any(w.rect.collidepoint(pos) for w in self.wall_group):
+                    bow = Bow(pos)
+                    self.all_sprites.add(bow)
+                    self.powerup_group.add(bow)
+                    bow_spawned = True
 
         endpoint = Endpoint((MAZE_COLS-1, MAZE_ROWS//2))
         self.all_sprites.add(endpoint)
@@ -117,14 +130,20 @@ class GameController:
                 monster.update(self.wall_group)
             for projectile in self.projectile_group:
                 projectile.update()
-                # Check collision with walls
                 for wall in self.wall_group:
                     if projectile.rect.colliderect(wall.rect):
                         projectile.kill()
                         break
-                # Check collision with monsters (process only one collision)
                 for m in pygame.sprite.spritecollide(projectile, self.monster_group, False):
-                    m.hit(projectile.direction * KNOCKBACK_SPEED)
+                    # TODO: 擊退怪物！
+                    '''
+                    計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
+                    projectile.direction 可以取得射出物件（擊中怪物的物件）的方向
+                    或許可以在 config.py 找找其他相關的變數或是自己設定
+                    '''
+                    # ---------------- modify code below ----------------
+                    m.hit(m.direction * MONSTER_SPEED)
+                    # ---------------- modify code above ----------------
                     projectile.kill()
                     if m.is_dying and not hasattr(m, 'key_dropped'):
                         m.key_dropped = True
@@ -137,8 +156,15 @@ class GameController:
                 fist.update()
                 collided = pygame.sprite.spritecollide(fist, self.monster_group, False)
                 for m in collided:
-                    knockback_velocity = self.player.direction * KNOCKBACK_SPEED
-                    m.hit(knockback_velocity)
+                    # TODO: 擊退怪物！
+                    '''
+                    計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
+                    self.player.direction 可以取得勇者的方向
+                    或許可以在 config.py 找找其他相關的變數或是自己設定
+                    '''
+                    # ---------------- modify code below ----------------
+                    m.hit(m.direction * MONSTER_SPEED)
+                    # ---------------- modify code above ----------------
                     fist.kill()
                     if m.is_dying and not hasattr(m, 'key_dropped'):
                         m.key_dropped = True
@@ -152,7 +178,6 @@ class GameController:
             for m in collided_monsters:
                 if m.is_dying:
                     continue
-                # If the player is currently invulnerable, skip damage processing
                 if self.player.invuln_timer > 0:
                     continue
                 if self.player.is_attacking:
@@ -161,15 +186,16 @@ class GameController:
                     self.player.arrow_spawned = False
                 self.player.lives -= 1
                 self.player.invuln_timer = INVULN_TIME
-                collision_vector = pygame.math.Vector2(self.player.rect.center) - pygame.math.Vector2(m.rect.center)
-                if collision_vector.length() == 0:
-                    collision_vector = self.player.direction
-                else:
-                    collision_vector = collision_vector.normalize()
-                player_knockback_velocity = collision_vector * KNOCKBACK_SPEED
-                monster_knockback_velocity = -collision_vector * KNOCKBACK_SPEED
-                self.player.start_knockback(player_knockback_velocity, KNOCKBACK_DURATION)
-                m.hit(monster_knockback_velocity)
+                # TODO: 擊退怪物！
+                '''
+                計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
+                計算勇者被撞到後的擊退速度（包括方向），並且呼叫 self.player.start_knockback(velocity, KNOCKBACK_DURATION) 來指定勇者被撞到時的擊退方向
+                Hint: 記得 Vector2
+                '''
+                # ---------------- modify code below ----------------
+                self.player.start_knockback(-self.player.direction * PLAYER_SPEED, KNOCKBACK_DURATION) # 玩家固定往本來移動方向的反方向擊退
+                m.hit(m.direction * MONSTER_SPEED) # 怪物方向不受影響                                          (思考一下有沒有更合理的方式）
+                # ---------------- modify code above ----------------
                 if m.is_dying and not hasattr(m, 'key_dropped'):
                     m.key_dropped = True
                     if random.random() < KEY_DROP_PROBABILITY and not self.player.has_key:
@@ -198,7 +224,6 @@ class GameController:
                 powerup_hit.apply(self.player)
                 powerup_hit.kill()
 
-            # Handle arrow attack animation and spawning
             if self.player.has_bow and self.player.is_attacking:
                 if self.player.rapid_fire:
                     if self.player.attack_anim_index >= 7 and not self.player.arrow_spawned:
@@ -221,25 +246,27 @@ class GameController:
             self.monster_spawn_timer += 1
             if self.monster_spawn_timer >= MONSTER_SPAWN_INTERVAL:
                 self.monster_spawn_timer = 0
-                while True:
-                    col = random.randint(0, MAZE_COLS - 1)
-                    row = random.randint(0, MAZE_ROWS - 1)
-                    if (col, row) not in [(0,0), (MAZE_COLS-1, MAZE_ROWS//2)]:
-                        break
-                pos = (col*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2, row*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2)
-                new_monster = Monster(pos)
-                self.all_sprites.add(new_monster)
-                self.monster_group.add(new_monster)
+                pos = spwan_random_pos()
+                if pos == None:
+                    pass
+                else:
+                    new_monster = Monster(pos)
+                    self.all_sprites.add(new_monster)
+                    self.monster_group.add(new_monster)
 
             self.powerup_spawn_timer += 1
             if self.powerup_spawn_timer >= POWERUP_SPAWN_INTERVAL:
                 self.powerup_spawn_timer = 0
-                while True:
-                    col = random.randint(0, MAZE_COLS - 1)
-                    row = random.randint(0, MAZE_ROWS - 1)
-                    if (col, row) not in [(0,0), (MAZE_COLS-1, MAZE_ROWS//2)]:
-                        break
-                pos = (col*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2, row*MAZE_CELL_SIZE+MAZE_CELL_SIZE//2)
-                powerup = AttackRangePowerUp(pos)
-                self.all_sprites.add(powerup)
-                self.powerup_group.add(powerup)
+                pos = spwan_random_pos()
+                if pos == None:
+                    pass
+                else:
+                    # TODO: 把你的道具放進來！
+                    '''
+                    把下方的程式改成：每次生成道具時，隨機生成其中一種道具
+                    Hint: 你可以使用 random.choice() 來隨機選擇一個 list 中的元素
+                    '''
+                    # ---------------- modify code below ----------------
+                    powerup = AttackRangePowerUp(pos)
+                    self.all_sprites.add(powerup)
+                    self.powerup_group.add(powerup)
