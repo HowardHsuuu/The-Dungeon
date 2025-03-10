@@ -29,9 +29,9 @@ class Fist(pygame.sprite.Sprite):
         self.timer = 0
 
     def update(self):
-        # TODO: 讓勇者學會拳擊
+        # TODO 3: 讓勇者學會拳擊
         '''
-        拳擊物件的邏輯：當空白鍵被按時，一個 Fist 物件會被加入，並且在每個 frame 呼叫一次 update()
+        拳擊物件的邏輯：當空白鍵被按時，一個 Fist 物件會被加入，並且在每個 frame 呼叫一次 update()，你現在要實作的是這個 update() method
         發射物件（拳頭）的管理方式是：self.lifetime 作為拳頭存在的時間，用 self.timer 來計時
         self.speed 是拳頭的移動速度
         self.direction 是拳頭的移動方向 (self.direction.x, self.direction.y)
@@ -54,7 +54,7 @@ class Arrow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
 
     def update(self):
-        # TODO: 修好勇者的弓箭
+        # TODO 4: 修好勇者的弓箭
         '''
         邏輯和拳頭大致相同，但弓箭沒有 lifetime，可以一直飛行直到碰撞到牆壁
         self.rect.colliderect(wall.rect) 可以檢查弓箭是否碰撞到「某個」牆壁

@@ -9,18 +9,15 @@ class Renderer:
     def __init__(self, screen, assets):
         self.screen = screen
 
-        # Check for five types of tile images
         tile_paths = []
         for i in range(1, 6):
             path = f"assets/tiles{i}.png"
             if os.path.exists(path):
                 tile_paths.append(path)
         if tile_paths:
-            # Load available tile images and assume a fixed size (adjust as needed)
             self.tile_images = [load_image(path, (128, 100)) for path in tile_paths]
             self.tile_width = self.tile_images[0].get_width()
             self.tile_height = self.tile_images[0].get_height()
-            # Create a background surface by randomly choosing one tile for each cell
             self.tiled_background = pygame.Surface((WORLD_WIDTH, WORLD_HEIGHT))
             for x in range(0, WORLD_WIDTH, self.tile_width):
                 for y in range(0, WORLD_HEIGHT, self.tile_height):
@@ -28,7 +25,6 @@ class Renderer:
                     self.tiled_background.blit(tile, (x, y))
             self.background_image = self.tiled_background
         else:
-            # Fall back to a single background image if no tile images are found.
             self.background_image = assets.get('background')
 
         self.heart_image = assets.get('heart')
@@ -37,7 +33,6 @@ class Renderer:
         self.powerup_icon = assets.get('powerup')
         self.bg_color = assets.get('bg_color', (0, 0, 0))
         self.arrow_icon = load_image("assets/arrow-icon.png", (30, 30))
-        # Ensure no_key_icon has the correct size and transparency
         self.no_key_icon = load_image("assets/no-key.png", (25, 35))
 
     def render(self, all_sprites, wall_group, player, endpoint_group, camera_x,
@@ -71,7 +66,7 @@ class Renderer:
             msg = font.render("Press R to restart", True, (0, 255, 0))
             msg_rect = msg.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2 - 10))
             self.screen.blit(msg, msg_rect)
-        # TODO: 顯示勇者狀態
+        # TODO 5: 顯示勇者狀態
         '''
         模仿 demo 中看到的顯示方式，或是你喜歡的表現方式
         self.heart_image 為一個愛心的圖案，你可以用 self.screen.blit(self.heart_image, (x, y)) 來將它顯示在畫面上 (x, y) 處

@@ -16,7 +16,7 @@ from models.maze import generate_maze, generate_maze_walls
 from views.renderer import Renderer
 from helper import load_image
 
-# TODO: 讓迷宮活起來！
+# TODO 2: 讓迷宮活起來！
 '''
 迷宮地圖是由「一格一格」的方塊組成，每個方塊的大小為 MAZE_CELL_SIZE
 迷宮地圖的大小（方塊數量）為 MAZE_COLS x MAZE_ROWS
@@ -135,7 +135,7 @@ class GameController:
                         projectile.kill()
                         break
                 for m in pygame.sprite.spritecollide(projectile, self.monster_group, False):
-                    # TODO: 擊退怪物！
+                    # TODO 6: 擊退怪物！
                     '''
                     計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
                     projectile.direction 可以取得射出物件（擊中怪物的物件）的方向
@@ -156,7 +156,7 @@ class GameController:
                 fist.update()
                 collided = pygame.sprite.spritecollide(fist, self.monster_group, False)
                 for m in collided:
-                    # TODO: 擊退怪物！
+                    # TODO 6: 擊退怪物！
                     '''
                     計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
                     self.player.direction 可以取得勇者的方向
@@ -186,7 +186,7 @@ class GameController:
                     self.player.arrow_spawned = False
                 self.player.lives -= 1
                 self.player.invuln_timer = INVULN_TIME
-                # TODO: 擊退怪物！
+                # TODO 6: 擊退怪物！
                 '''
                 計算怪物被擊中後的擊退速度（包括方向），並且呼叫 m.hit(velocity) 來指定怪物被擊中時的擊退方向
                 計算勇者被撞到後的擊退速度（包括方向），並且呼叫 self.player.start_knockback(velocity, KNOCKBACK_DURATION) 來指定勇者被撞到時的擊退方向
@@ -261,7 +261,7 @@ class GameController:
                 if pos == None:
                     pass
                 else:
-                    # TODO: 把你的道具放進來！
+                    # TODO 7: 把你的道具放進來！
                     '''
                     把下方的程式改成：每次生成道具時，隨機生成其中一種道具
                     Hint: 你可以使用 random.choice() 來隨機選擇一個 list 中的元素

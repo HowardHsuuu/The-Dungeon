@@ -85,7 +85,7 @@ class Player(pygame.sprite.Sprite):
         else: # 角色沒有在攻擊也沒有被擊退，可以移動
             keys = pygame.key.get_pressed()
             dx = dy = 0
-            # TODO: 讓勇者動起來！
+            # TODO 1: 讓勇者動起來！
             '''
             keys 為一個 list，裡面包含了所有按鍵的狀態，按鍵為 True，沒按則為 False
             例如 keys[pygame.K_LEFT] 會回傳 True 或 False，表示左鍵有沒有被按下

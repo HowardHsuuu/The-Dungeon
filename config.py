@@ -1,7 +1,7 @@
 import math
 import os
 
-# TODO: 完成到 TODO 7 後玩玩這裡的參數吧！
+# TODO 0: 完成到 TODO 6 後玩玩這裡的參數吧！
 
 # ====================
 # Image settings
