@@ -6,7 +6,7 @@ from controllers.game_controller import GameController
 def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Maze Adventurer MVC")
+    pygame.display.set_caption("The Dungeon")
 
     controller = GameController(screen)
     controller.run()
